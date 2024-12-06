@@ -71,13 +71,13 @@ function checkAuth() {
     const logoutLink = document.getElementById("logout-link");
 
     if (loggedInUser) {
-        loginLink.style.display = "none";
-        registerLink.style.display = "none";
-        logoutLink.style.display = "inline";
+        if (loginLink) loginLink.style.display = "none";
+        if (registerLink) registerLink.style.display = "none";
+        if (logoutLink) logoutLink.style.display = "inline";
     } else {
-        loginLink.style.display = "inline";
-        registerLink.style.display = "inline";
-        logoutLink.style.display = "none";
+        if (loginLink) loginLink.style.display = "inline";
+        if (registerLink) registerLink.style.display = "inline";
+        if (logoutLink) logoutLink.style.display = "none";
     }
 }
 
@@ -89,8 +89,10 @@ let workouts = [];
 let editIndex = -1;
 
 function navigateToLog() {
-    document.getElementById("log-form").style.display = "block";
-    document.getElementById("workout-log").style.display = "block";
+    const logForm = document.getElementById("log-form");
+    const workoutLog = document.getElementById("workout-log");
+    if (logForm) logForm.style.display = "block";
+    if (workoutLog) workoutLog.style.display = "block";
 }
 
 async function fetchWorkouts() {
@@ -153,7 +155,19 @@ async function addWorkout() {
                 body: JSON.stringify(workout)
             });
 
-            const data = await response.json();
+            console.log('Response status:', response.status);
+            const text = await response.text();
+            console.log('Response text:', text);
+
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (parseError) {
+                console.error('Error parsing JSON:', parseError);
+                alert("Error parsing server response. Check console for details.");
+                return;
+            }
+
             if (response.ok) {
                 workouts.unshift(data);
                 displayWorkouts();
@@ -175,7 +189,19 @@ async function addWorkout() {
                 body: JSON.stringify(workout)
             });
 
-            const data = await response.json();
+            console.log('Response status:', response.status);
+            const text = await response.text();
+            console.log('Response text:', text);
+
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (parseError) {
+                console.error('Error parsing JSON:', parseError);
+                alert("Error parsing server response. Check console for details.");
+                return;
+            }
+
             if (response.ok) {
                 workouts[editIndex] = data;
                 displayWorkouts();
@@ -292,6 +318,3 @@ function checkAndProtectPage() {
 if (window.location.pathname.endsWith('workout_log.html')) {
     window.onload = checkAndProtectPage;
 }
-
-
-
